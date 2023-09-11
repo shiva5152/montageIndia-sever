@@ -15,7 +15,7 @@ export const reduceVideo = catchAsyncError(async (req, res, next) => {
     const { name } = req.body;
 
     const data = await handleReduceVideos(name);
-    handleVideoWithWaterMark(name);
+    // handleVideoWithWaterMark(name);
     res.json({ msg: "uploaded successfully", jobId: data.Job?.Id })
 })
 

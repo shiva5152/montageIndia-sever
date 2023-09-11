@@ -15,7 +15,7 @@ const secretAccessKey = process.env.AWS_SECRET_KEY;
 exports.reduceVideo = (0, catchAsyncError_1.default)(async (req, res, next) => {
     const { name } = req.body;
     const data = await (0, resizeVideo_1.handleReduceVideos)(name);
-    (0, resizeVideo_1.handleVideoWithWaterMark)(name);
+    // handleVideoWithWaterMark(name);
     res.json({ msg: "uploaded successfully", jobId: data.Job?.Id });
 });
 exports.uploadVideo = (0, catchAsyncError_1.default)(async (req, res, next) => {
