@@ -1,4 +1,6 @@
-node_modules
-img/*
-output/*
 .env
+
+/node_modules
+
+
+
