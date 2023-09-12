@@ -17,8 +17,6 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const adminRoute_js_1 = __importDefault(require("./routes/user/adminRoute.js"));
 const img_js_1 = __importDefault(require("./routes/media/img.js"));
 const connectDb_js_1 = __importDefault(require("./utils/connectDb.js"));
-const speakeasy_1 = __importDefault(require("speakeasy"));
-const qrcode_1 = __importDefault(require("qrcode"));
 const cors_1 = __importDefault(require("cors"));
 const video_js_1 = __importDefault(require("./routes/media/video.js"));
 dotenv_1.default.config();
@@ -31,23 +29,7 @@ app.use(express_1.default.urlencoded({ extended: true })); //tyr to remove it
 app.use("/api/v1/auth/admin", adminRoute_js_1.default);
 app.use("/api/v1/media/img", img_js_1.default);
 app.use("/api/v1/media/video", video_js_1.default);
-// temp
-const secret = speakeasy_1.default.generateSecret({ length: 20 });
-app.get('/', (req, res) => {
-    console.log(secret);
-    qrcode_1.default.toDataURL(secret.otpauth_url, (err, data) => {
-        res.json({ src: "hello" });
-    });
-});
-app.post('/verify', (req, res) => {
-    const { code } = req.body;
-    const verified = speakeasy_1.default.totp.verify({
-        secret: secret.ascii,
-        encoding: "ascii",
-        token: code, // Allow a 2-step window for code validation
-    });
-    res.json({ msg: verified });
-});
+// console.log(process.env.MONGO_URL)
 const port = process.env.PORT || 5000;
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {

@@ -3,8 +3,6 @@ import dotenv from 'dotenv';
 import adminRouter from './routes/user/adminRoute.js';
 import imageRouter from './routes/media/img.js';
 import connectDB from './utils/connectDb.js';
-import speakeasy from 'speakeasy'
-import qrcode from 'qrcode'
 import cors from 'cors'
 import videoRouter from './routes/media/video.js';
 dotenv.config();
@@ -20,31 +18,9 @@ app.use("/api/v1/auth/admin", adminRouter);
 app.use("/api/v1/media/img", imageRouter);
 app.use("/api/v1/media/video", videoRouter)
 
-// temp
-const secret = speakeasy.generateSecret({ length: 20 });
-app.get('/', (req, res) => {
-
-  console.log(secret);
-  qrcode.toDataURL(secret.otpauth_url as string, (err, data) => {
-
-    res.json({ src: "hello" })
-
-  })
-
-});
-app.post('/verify', (req, res) => {
-  const { code } = req.body;
-  const verified = speakeasy.totp.verify({
-    secret: secret.ascii,
-    encoding: "ascii",
-    token: code, // Allow a 2-step window for code validation
-  });
-
-  res.json({ msg: verified })
-
-});
 
 
+// console.log(process.env.MONGO_URL)
 const port = process.env.PORT || 5000;
 const start = async () => {
   try {
