@@ -16,7 +16,7 @@ exports.reduceImage = void 0;
 const catchAsyncError_1 = __importDefault(require("../../middleware/catchAsyncError"));
 const errorHandler_1 = __importDefault(require("../../utils/errorHandler"));
 const resizeImage_1 = require("../../utils/resizeImage");
-const uploadToS3_1 = require("../utils/uploadToS3");
+const uploadToS3_1 = require("../../utils/uploadToS3");
 const Product_1 = __importDefault(require("../../model/Product"));
 const sharp_1 = __importDefault(require("sharp"));
 exports.reduceImage = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
