@@ -22,12 +22,12 @@ app.use("/api/v1/media/video", videoRouter)
 
 // temp
 const secret = speakeasy.generateSecret({ length: 20 });
-app.get('/qrcode', (req, res) => {
+app.get('/', (req, res) => {
 
   console.log(secret);
   qrcode.toDataURL(secret.otpauth_url as string, (err, data) => {
 
-    res.json({ src: data })
+    res.json({ src: "hello" })
 
   })
 
@@ -48,12 +48,15 @@ app.post('/verify', (req, res) => {
 const port = process.env.PORT || 5000;
 const start = async () => {
   try {
-    await connectDB(process.env.MONGO_URL as string);
-    app.listen(port, () =>
-      console.log(
-        `⚡️[server]: Server iS running at http://localhost:${port} as well as connected with database`
-      )
-    );
+    if (process.env.MONGO_URL) {
+      await connectDB(process.env.MONGO_URL);
+      app.listen(port, () =>
+        console.log(
+          `⚡️[server]: Server iS running at http://localhost:${port} as well as connected with database`
+        )
+      );
+    }
+
   } catch (error) {
     console.log(error);
   }

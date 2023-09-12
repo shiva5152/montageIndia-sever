@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -9,7 +18,7 @@ const catchAsyncError_js_1 = __importDefault(require("../../middleware/catchAsyn
 const errorHandler_js_1 = __importDefault(require("../../utils/errorHandler.js"));
 const sendToken_js_1 = __importDefault(require("../../utils/sendToken.js"));
 const Admin_js_1 = __importDefault(require("../../model/user/Admin.js"));
-exports.signupAdmin = (0, catchAsyncError_js_1.default)(async (req, res, next) => {
+exports.signupAdmin = (0, catchAsyncError_js_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
     if (!req.body || !req.body.name || !req.body.email) {
         return res.status(400).json({ error: 'Invalid request body' });
@@ -20,34 +29,34 @@ exports.signupAdmin = (0, catchAsyncError_js_1.default)(async (req, res, next) =
     if (!name || !email) {
         return next(new errorHandler_js_1.default("please provide all values", 400));
     }
-    const userAlreadyExists = await Admin_js_1.default.findOne({ email });
+    const userAlreadyExists = yield Admin_js_1.default.findOne({ email });
     if (userAlreadyExists) {
         return next(new errorHandler_js_1.default("Email already in exist", 400));
     }
     console.log("called ,sign");
-    const user = await Admin_js_1.default.create({ name, email, avatar });
+    const user = yield Admin_js_1.default.create({ name, email, avatar });
     res.status(201).json({
         success: true,
         message: "Admin Created successfully",
         user
     });
-});
-exports.loginAdmin = (0, catchAsyncError_js_1.default)(async (req, res, next) => {
+}));
+exports.loginAdmin = (0, catchAsyncError_js_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     if (!email || !password) {
         return next(new errorHandler_js_1.default("Please Enter Email & Password", 400));
     }
-    const user = await Admin_js_1.default.findOne({ email }).select("+password");
+    const user = yield Admin_js_1.default.findOne({ email }).select("+password");
     if (!user) {
         return next(new errorHandler_js_1.default("Invalid  Email or Password", 401));
     }
-    const verifyPassword = await user.comparePassword(password);
+    const verifyPassword = yield user.comparePassword(password);
     if (!verifyPassword) {
         return next(new errorHandler_js_1.default("Invalid  Email or Password", 401));
     }
     (0, sendToken_js_1.default)(user, 200, res);
-});
-exports.logoutAdmin = (0, catchAsyncError_js_1.default)(async (req, res, next) => {
+}));
+exports.logoutAdmin = (0, catchAsyncError_js_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.cookie("token", null, {
         expires: new Date(Date.now()),
         httpOnly: true,
@@ -55,73 +64,73 @@ exports.logoutAdmin = (0, catchAsyncError_js_1.default)(async (req, res, next) =
         success: true,
         message: "Logged Out Successfully"
     });
-});
-exports.getCurrentAdmin = (0, catchAsyncError_js_1.default)(async (req, res, next) => {
+}));
+exports.getCurrentAdmin = (0, catchAsyncError_js_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { _id } = req.body;
-    const user = await Admin_js_1.default.findOne({ _id });
+    const user = yield Admin_js_1.default.findOne({ _id });
     res.status(200).json({
         success: true,
         message: "got current user Successfully",
         user
     });
-});
-exports.deleteAdmin = (0, catchAsyncError_js_1.default)(async (req, res, next) => {
+}));
+exports.deleteAdmin = (0, catchAsyncError_js_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const user = await Admin_js_1.default.findOne({ _id: id });
+    const user = yield Admin_js_1.default.findOne({ _id: id });
     if (!user) {
         next(new errorHandler_js_1.default("user does not exit", 404));
     }
-    await user?.deleteOne({ _id: id });
-    const users = await Admin_js_1.default.find();
+    yield (user === null || user === void 0 ? void 0 : user.deleteOne({ _id: id }));
+    const users = yield Admin_js_1.default.find();
     res.status(200).json({
         success: true,
         message: "Account deleted successfully",
         users
     });
-});
-exports.updateAdminRole = (0, catchAsyncError_js_1.default)(async (req, res, next) => {
+}));
+exports.updateAdminRole = (0, catchAsyncError_js_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.body) {
         return next(new errorHandler_js_1.default("body is not defined", 400));
     }
     const { id, role } = req.body;
     console.log(req.body);
-    const user = await Admin_js_1.default.findOne({ _id: id });
+    const user = yield Admin_js_1.default.findOne({ _id: id });
     if (user) {
         user.role = role;
-        await user.save();
+        yield user.save();
     }
-    const users = await Admin_js_1.default.find();
+    const users = yield Admin_js_1.default.find();
     res.status(200).json({
         success: true,
         message: "user role updated successfully",
         users
     });
-});
-exports.updateAdminCategory = (0, catchAsyncError_js_1.default)(async (req, res, next) => {
+}));
+exports.updateAdminCategory = (0, catchAsyncError_js_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.body) {
         return next(new errorHandler_js_1.default("body is not defined", 400));
     }
     const { id, category } = req.body;
     console.log(req.body);
-    const user = await Admin_js_1.default.findOne({ _id: id });
+    const user = yield Admin_js_1.default.findOne({ _id: id });
     if (user) {
         user.category = category;
-        await user.save();
+        yield user.save();
     }
-    const users = await Admin_js_1.default.find();
+    const users = yield Admin_js_1.default.find();
     res.status(200).json({
         success: true,
         message: "user category updated successfully",
         users
     });
-});
-exports.getAllAdmin = (0, catchAsyncError_js_1.default)(async (req, res, next) => {
-    const users = await Admin_js_1.default.find();
+}));
+exports.getAllAdmin = (0, catchAsyncError_js_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const users = yield Admin_js_1.default.find();
     res.status(200).json({
         success: true,
         users
     });
-});
+}));
 // change password
 // const ChangePassword = catchAsyncError(async (req, res, next) => {
 //     const { email, newPassword, oldPassword } = req.body;

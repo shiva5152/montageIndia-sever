@@ -13,9 +13,10 @@ const secretAccessKey = process.env.AWS_SECRET_KEY as string
 
 export const reduceVideo = catchAsyncError(async (req, res, next) => {
     const { name } = req.body;
+    console.log(name);
 
     const data = await handleReduceVideos(name);
-    // handleVideoWithWaterMark(name);
+    handleVideoWithWaterMark(name);
     res.json({ msg: "uploaded successfully", jobId: data.Job?.Id })
 })
 

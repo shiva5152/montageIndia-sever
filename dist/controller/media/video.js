@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -12,22 +21,24 @@ dotenv_1.default.config();
 const region = process.env.AWS_BUCKET_REGION;
 const accessKeyId = process.env.AWS_ACCESS_KEY;
 const secretAccessKey = process.env.AWS_SECRET_KEY;
-exports.reduceVideo = (0, catchAsyncError_1.default)(async (req, res, next) => {
+exports.reduceVideo = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { name } = req.body;
-    const data = await (0, resizeVideo_1.handleReduceVideos)(name);
-    // handleVideoWithWaterMark(name);
-    res.json({ msg: "uploaded successfully", jobId: data.Job?.Id });
-});
-exports.uploadVideo = (0, catchAsyncError_1.default)(async (req, res, next) => {
-    const { name } = req?.body;
+    console.log(name);
+    const data = yield (0, resizeVideo_1.handleReduceVideos)(name);
+    (0, resizeVideo_1.handleVideoWithWaterMark)(name);
+    res.json({ msg: "uploaded successfully", jobId: (_a = data.Job) === null || _a === void 0 ? void 0 : _a.Id });
+}));
+exports.uploadVideo = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name } = req === null || req === void 0 ? void 0 : req.body;
     const url = (0, uploadToS3_1.getUrl)(name);
     res.json({ success: true, url });
-});
-exports.getJobProgress = (0, catchAsyncError_1.default)(async (req, res, next) => {
+}));
+exports.getJobProgress = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { jobId } = req.params;
-    const data = await (0, resizeVideo_1.getTranscodeProgress)(jobId);
+    const data = yield (0, resizeVideo_1.getTranscodeProgress)(jobId);
     res.json({ success: true, data });
-});
+}));
 // export const reduceVideo = catchAsyncError(async (req, res, next) => {
 //     const mediaconvert = new MediaConvert({
 //         region,

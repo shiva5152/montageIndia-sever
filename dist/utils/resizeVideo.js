@@ -21,7 +21,7 @@ const handleReduceVideos = (name) => {
         const params = {
             Queue: "arn:aws:mediaconvert:eu-north-1:097137673320:queues/Default",
             UserMetadata: {},
-            Role: "arn:aws:iam::097137673320:role/service-role/MediaConvert_Default_Role_byShiva",
+            Role: "arn:aws:iam::097137673320:role/handlemediaConverting",
             Settings: {
                 TimecodeConfig: {
                     Source: "ZEROBASED"
@@ -128,7 +128,7 @@ const handleVideoWithWaterMark = (name) => {
     const params = {
         Queue: "arn:aws:mediaconvert:eu-north-1:097137673320:queues/Default",
         UserMetadata: {},
-        Role: "arn:aws:iam::097137673320:role/service-role/MediaConvert_Default_Role_byShiva",
+        Role: "arn:aws:iam::097137673320:role/handlemediaConverting",
         Settings: {
             TimecodeConfig: {
                 Source: "ZEROBASED"
@@ -194,13 +194,14 @@ exports.handleVideoWithWaterMark = handleVideoWithWaterMark;
 const getTranscodeProgress = (JobId) => {
     return new Promise((resolve, reject) => {
         mediaconvert.getJob({ Id: JobId }, (err, data) => {
+            var _a, _b;
             if (err) {
                 console.error("Error while getting the job", err);
                 reject(err); // Reject the Promise in case of an error
             }
             else {
-                const jobStatus = data?.Job?.Status;
-                const jobProgress = data?.Job?.JobPercentComplete || -1;
+                const jobStatus = (_a = data === null || data === void 0 ? void 0 : data.Job) === null || _a === void 0 ? void 0 : _a.Status;
+                const jobProgress = ((_b = data === null || data === void 0 ? void 0 : data.Job) === null || _b === void 0 ? void 0 : _b.JobPercentComplete) || -1;
                 console.log({ jobStatus, jobProgress });
                 if (jobStatus) {
                     resolve({ jobStatus, jobProgress }); // Resolve the Promise with the result

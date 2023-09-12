@@ -19,7 +19,7 @@ export const handleReduceVideos = (name: string): Promise<MediaConvert.CreateJob
         const params = {
             Queue: "arn:aws:mediaconvert:eu-north-1:097137673320:queues/Default",
             UserMetadata: {},
-            Role: "arn:aws:iam::097137673320:role/service-role/MediaConvert_Default_Role_byShiva",
+            Role: "arn:aws:iam::097137673320:role/handlemediaConverting",
             Settings: {
                 TimecodeConfig: {
                     Source: "ZEROBASED"
@@ -131,7 +131,7 @@ export const handleVideoWithWaterMark = (name: string) => {
     const params = {
         Queue: "arn:aws:mediaconvert:eu-north-1:097137673320:queues/Default",
         UserMetadata: {},
-        Role: "arn:aws:iam::097137673320:role/service-role/MediaConvert_Default_Role_byShiva",
+        Role: "arn:aws:iam::097137673320:role/handlemediaConverting",
         Settings: {
             TimecodeConfig: {
                 Source: "ZEROBASED"

@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -24,10 +33,10 @@ app.use("/api/v1/media/img", img_js_1.default);
 app.use("/api/v1/media/video", video_js_1.default);
 // temp
 const secret = speakeasy_1.default.generateSecret({ length: 20 });
-app.get('/qrcode', (req, res) => {
+app.get('/', (req, res) => {
     console.log(secret);
     qrcode_1.default.toDataURL(secret.otpauth_url, (err, data) => {
-        res.json({ src: data });
+        res.json({ src: "hello" });
     });
 });
 app.post('/verify', (req, res) => {
@@ -40,13 +49,15 @@ app.post('/verify', (req, res) => {
     res.json({ msg: verified });
 });
 const port = process.env.PORT || 5000;
-const start = async () => {
+const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        await (0, connectDb_js_1.default)(process.env.MONGO_URL);
-        app.listen(port, () => console.log(`⚡️[server]: Server iS running at http://localhost:${port} as well as connected with database`));
+        if (process.env.MONGO_URL) {
+            yield (0, connectDb_js_1.default)(process.env.MONGO_URL);
+            app.listen(port, () => console.log(`⚡️[server]: Server iS running at http://localhost:${port} as well as connected with database`));
+        }
     }
     catch (error) {
         console.log(error);
     }
-};
+});
 start();
