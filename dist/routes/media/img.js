@@ -16,5 +16,5 @@ const storage = multer_1.default.diskStorage({
 });
 const upload = (0, multer_1.default)({ storage: storage });
 const imageRouter = express_1.default.Router();
-imageRouter.route("/reduceImg").post(upload.single('image'), img_1.reduceImage);
+imageRouter.route("/reduceImg").post(upload.array('image'), img_1.reduceImage);
 exports.default = imageRouter;

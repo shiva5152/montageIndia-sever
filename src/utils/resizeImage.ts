@@ -59,7 +59,12 @@ export const resizeForProductPage = async (input: string, imgName: string) => {
 
     try {
         const { density, width, height } = await sharp(input, { limitInputPixels: 8585550069 }).metadata();
-        if (width && height && density) await sharp(input, { limitInputPixels: 8585550069 }).resize({ width: Math.floor(width / 8), height: Math.floor(height / 8) }).composite([{ input: 'assets/logo.png', gravity: "center", }]).withMetadata({ density: 72 }).toFile(`output/ProductPage-${imgName}`)
+        const { width: logoWidth, height: logoHeight } = await sharp('assets/logo.png', { limitInputPixels: 8585550069 }).metadata();
+
+        if (logoHeight && height && width && logoWidth) {
+            await sharp('assets/logo.png', { limitInputPixels: 8585550069 }).resize((logoHeight >= height || logoWidth >= width) ? { width: Math.floor(logoWidth / 2), height: Math.floor(logoHeight / 2) } : { width: logoWidth, height: logoHeight, }).toFile(`assets/recused-logo.png`)
+        }
+        if (width && height && density) await sharp(input, { limitInputPixels: 8585550069 }).resize({ width: Math.floor(width / 8), height: Math.floor(height / 8) }).composite([{ input: 'assets/recused-logo.png', gravity: "center", }]).withMetadata({ density: 72 }).toFile(`output/ProductPage-${imgName}`)
 
     } catch (error) {
         console.log(error);
@@ -73,5 +78,5 @@ export const resizeForThumbnail = async (input: string, imgName: string) => {
 
     } catch (error) {
         console.log(error);
-    } resizeForProductPage
+    }
 }
