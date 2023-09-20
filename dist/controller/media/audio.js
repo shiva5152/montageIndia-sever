@@ -14,22 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reduceAudio = void 0;
 const catchAsyncError_1 = __importDefault(require("../../middleware/catchAsyncError"));
+const errorHandler_1 = __importDefault(require("../../utils/errorHandler"));
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const ffmpeg_static_1 = __importDefault(require("ffmpeg-static"));
-// '[0:a][1:a]amix=inputs=2:duration=first[output]'
-// .complexFilter([
-//     { filter: 'aformat', options: { channel_layouts: 'stereo' }, inputs: '0:a', outputs: 'main' },
-//     { filter: 'atrim', options: { start: 0, end: 1 }, inputs: '1:a', outputs: 'trim' },
-//     { filter: 'adelay', options: { delays: '9000|9000' }, inputs: 'trim', outputs: 'wm' },
-//     { filter: 'amix', options: { inputs: 2 }, inputs: ['main', 'wm'], outputs: 'mix' }
-// ])
-// second closest
-// .complexFilter([
-//     { filter: 'amovie', options: { filename: watermarkAudio, loop: 0 }, outputs: 'beep' },
-//     { filter: 'asetpts', options: { expr: 'N/SR/TB' }, inputs: 'beep', outputs: 'pts' },
-//     { filter: 'amix', options: { inputs: 2, duration: 'shortest' }, inputs: ['0:a', 'pts'], outputs: 'mix' },
-//     { filter: 'volume', options: { volume: 2 }, inputs: 'mix', outputs: 'volume' }
-// ])
+const uploadToS3_1 = require("../../utils/uploadToS3");
 fluent_ffmpeg_1.default.setFfmpegPath(ffmpeg_static_1.default);
 function addAudioWatermark(mainAudio, watermarkAudio, output, callback) {
     (0, fluent_ffmpeg_1.default)()
@@ -71,9 +59,16 @@ function addAudioWatermark(mainAudio, watermarkAudio, output, callback) {
     //     .run();
 }
 exports.reduceAudio = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const originalAudioPath = 'audio/main.mp3';
+    var _a, _b;
+    // console.log(req.file);
+    if (!req.file) {
+        next(new errorHandler_1.default(`Can not get file`, 400));
+    }
+    const filename = (_a = req.file) === null || _a === void 0 ? void 0 : _a.originalname.split('.')[0];
+    const fileExtension = (_b = req.file) === null || _b === void 0 ? void 0 : _b.originalname.split('.')[1];
+    const originalAudioPath = `audio/${filename}.${fileExtension}`;
     const watermarkAudioPath = 'audio/watermark.wav';
-    const outputAudioPath = 'output/watermarked-audio.mp3';
+    const outputAudioPath = `output/${filename}-watermarked.${fileExtension}`;
     addAudioWatermark(originalAudioPath, watermarkAudioPath, outputAudioPath, (err) => {
         if (!err) {
             console.log('Watermark added successfully');
@@ -82,5 +77,33 @@ exports.reduceAudio = (0, catchAsyncError_1.default)((req, res, next) => __await
             console.error('Error adding watermark:', err);
         }
     });
+    // return res.json({ msg: "uploaded successfully" })
+    const images = [
+        { folder: `audio`, filename: `${filename}.${fileExtension}` },
+        { folder: `output`, filename: `${filename}-watermarked.${fileExtension}` },
+    ];
+    for (const image of images) {
+        try {
+            yield (0, uploadToS3_1.uploadAudio)(image, filename);
+        }
+        catch (error) {
+            console.log(error);
+            next(new errorHandler_1.default(`Error uploading image`, 400));
+        }
+    }
     res.json({ msg: "uploaded successfully" });
 }));
+// '[0:a][1:a]amix=inputs=2:duration=first[output]'
+// .complexFilter([
+//     { filter: 'aformat', options: { channel_layouts: 'stereo' }, inputs: '0:a', outputs: 'main' },
+//     { filter: 'atrim', options: { start: 0, end: 1 }, inputs: '1:a', outputs: 'trim' },
+//     { filter: 'adelay', options: { delays: '9000|9000' }, inputs: 'trim', outputs: 'wm' },
+//     { filter: 'amix', options: { inputs: 2 }, inputs: ['main', 'wm'], outputs: 'mix' }
+// ])
+// second closest
+// .complexFilter([
+//     { filter: 'amovie', options: { filename: watermarkAudio, loop: 0 }, outputs: 'beep' },
+//     { filter: 'asetpts', options: { expr: 'N/SR/TB' }, inputs: 'beep', outputs: 'pts' },
+//     { filter: 'amix', options: { inputs: 2, duration: 'shortest' }, inputs: ['0:a', 'pts'], outputs: 'mix' },
+//     { filter: 'volume', options: { volume: 2 }, inputs: 'mix', outputs: 'volume' }
+// ])

@@ -114,7 +114,7 @@ exports.reduceImage = (0, catchAsyncError_1.default)((req, res, next) => __await
         // Create a product entry for each image
         // const product = await Product.create({ name: filename, category, description });
         const { width, height } = yield (0, sharp_1.default)(original, { limitInputPixels: 8585550069 }).metadata();
-        return { msg: `Image ${imgName} uploaded successfully`, width, height };
+        return { msg: `Image ${imgName} uploaded successfully`, imgName, width, height };
     }));
     try {
         const results = yield Promise.all(processingPromises);

@@ -4,6 +4,7 @@ import { resizeToOriginal, resizeForThumbnail, resizeToMedium, resizeToSmall, re
 import { uploadImage } from "../../utils/uploadToS3";
 import Product from "../../model/Product";
 import sharp from 'sharp'
+
 // import {Multer} from 'multer'
 
 // export const reduceImage = catchAsyncError(async (req, res, next) => {
@@ -74,6 +75,9 @@ export const reduceImage = catchAsyncError(async (req, res, next) => {
     const files = req.files as Express.Multer.File[];
     console.log("after")
 
+
+
+
     if (!files || files.length === 0) {
         return next(new ErrorHandler("Files not found", 404));
     }
@@ -123,7 +127,7 @@ export const reduceImage = catchAsyncError(async (req, res, next) => {
 
         const { width, height } = await sharp(original, { limitInputPixels: 8585550069 }).metadata();
 
-        return { msg: `Image ${imgName} uploaded successfully`, width, height };
+        return { msg: `Image ${imgName} uploaded successfully`, imgName, width, height };
     });
 
     try {

@@ -13,12 +13,18 @@ const AdminsSchema = new mongoose.Schema({
     maxlength: [30, "name can't exceed 30 characters"],
     minlength: [4, "name should have more than 4 characters"],
     trim: true,
+    default: "none"
   },
   email: {
     type: String,
     required: true,
     unique: true,
     // validate: [validator.isEmail, "please enter a valid email"],
+  },
+  uid: {
+    type: String,
+    required: true,
+    unique: true,
   },
   avatar: {
     type: String,
@@ -35,11 +41,15 @@ const AdminsSchema = new mongoose.Schema({
     enum: ['superadmin', 'admin', 'vendor'],
     default: 'vendor',
   },
-  category: {
+  mediaType: {
     type: String,
     required: true,
     default: "music",
   },
+  category: {
+    type: String,
+    default: "all"
+  }
 },
   { timestamps: true }
 );

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUrl = exports.uploadImage = void 0;
+exports.uploadAudio = exports.getUrl = exports.uploadImage = void 0;
 const s3_1 = __importDefault(require("aws-sdk/clients/s3"));
 const fs_1 = __importDefault(require("fs"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -46,6 +46,26 @@ function uploadImage(image) {
     });
 }
 exports.uploadImage = uploadImage;
+function uploadAudio(image, subFolder) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const fileStream = fs_1.default.createReadStream(`${image.folder}/${image.filename}`);
+        const uploadParams = {
+            Bucket: bucketName,
+            Key: `audio/${subFolder}/${image.filename}`,
+            Body: fileStream,
+            ContentType: 'audio/mpeg',
+        };
+        s3.putObject(uploadParams, (err, data) => {
+            if (err) {
+                console.error(err);
+            }
+            else {
+                console.log('Image uploaded to S3:', data);
+            }
+        });
+    });
+}
+exports.uploadAudio = uploadAudio;
 const getUrl = (fileName) => {
     const params = {
         Bucket: bucketName,

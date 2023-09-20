@@ -5,26 +5,45 @@ import ErrorHandler from '../../utils/errorHandler.js';
 import sendToken from '../../utils/sendToken.js';
 import { AdminDocument } from '../../types/user.js';
 import Admin from '../../model/user/Admin.js';
-
+import { auth } from '../../config/firebase.js';
 
 export const signupAdmin = catchAsyncError(async (req, res, next) => {
-    console.log(req.body);
-    if (!req.body || !req.body.name || !req.body.email) {
+    // console.log(req.body);
+    if (!req.body || !req.body.email) {
         return res.status(400).json({ error: 'Invalid request body' });
     }
     console.log("called ,sign")
-    const { name, email, avatar } = req.body;
-    console.log(req.body);
+    const { email } = req.body;
+    const resi = auth.createUser({
+        email: email,
+        emailVerified: false,
+        password: '123shiva',
+        displayName: 'John Doe',
+        disabled: false
+    })
+        .then((userRecord) => {
+            console.log('Successfully created new user:', userRecord.uid);
+        })
+        .catch((error) => {
+            console.log('Error creating new user:', error);
+        });
+    return res.status(201).json({
+        resi,
+        success: true,
+        message: "Admin Created successfully",
 
-    if (!name || !email) {
-        return next(new ErrorHandler("please provide all values", 400))
-    }
+    })
+    // console.log(req.body);
+
+    // if (!name || !email) {
+    //     return next(new ErrorHandler("please provide all values", 400))
+    // }
     const userAlreadyExists = await Admin.findOne({ email });
     if (userAlreadyExists) {
         return next(new ErrorHandler("Email already in exist", 400))
     }
     console.log("called ,sign")
-    const user: AdminDocument = await Admin.create({ name, email, avatar })
+    const user: AdminDocument = await Admin.create(req.body)
 
     res.status(201).json({
         success: true,

@@ -36,6 +36,26 @@ async function uploadImage(image: { folder: string, filename: string }) {
         }
     });
 }
+async function uploadAudio(image: { folder: string, filename: string }, subFolder: string) {
+
+
+    const fileStream = fs.createReadStream(`${image.folder}/${image.filename}`);
+
+    const uploadParams = {
+        Bucket: bucketName,
+        Key: `audio/${subFolder}/${image.filename}`,
+        Body: fileStream,
+        ContentType: 'audio/mpeg',
+    };
+
+    s3.putObject(uploadParams, (err, data) => {
+        if (err) {
+            console.error(err)
+        } else {
+            console.log('Image uploaded to S3:', data);
+        }
+    });
+}
 const getUrl = (fileName: string) => {
     const params = {
         Bucket: bucketName,
@@ -46,4 +66,4 @@ const getUrl = (fileName: string) => {
     console.log(signedUrl);
     return signedUrl;
 }
-export { uploadImage, getUrl }
+export { uploadImage, getUrl, uploadAudio }
