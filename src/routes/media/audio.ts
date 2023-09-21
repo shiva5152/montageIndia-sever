@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
     },
 });
 const upload = multer({ storage: storage });
-const audioRouter = express.Router();
+const audioRouter = express.Router()
 
 audioRouter.route("/reduceAudio").post(upload.single('audio'), reduceAudio);
 

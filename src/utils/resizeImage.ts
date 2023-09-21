@@ -61,13 +61,15 @@ export const resizeForProductPage = async (input: string, imgName: string) => {
         const { density, width, height } = await sharp(input, { limitInputPixels: 8585550069 }).metadata();
         const { width: logoWidth, height: logoHeight } = await sharp('assets/logo.png', { limitInputPixels: 8585550069 }).metadata();
 
+        console.log(logoHeight, height, width, logoWidth)
+        // return console.log("from composite");
         if (logoHeight && height && width && logoWidth) {
-            await sharp('assets/logo.png', { limitInputPixels: 8585550069 }).resize((logoHeight >= height || logoWidth >= width) ? { width: Math.floor(logoWidth / 2), height: Math.floor(logoHeight / 2) } : { width: logoWidth, height: logoHeight, }).toFile(`assets/recused-logo.png`)
+            await sharp('assets/logo.png', { limitInputPixels: 8585550069 }).resize((logoHeight >= (height / 8) || (logoWidth >= width / 8)) ? { width: Math.floor(logoWidth / 2), height: Math.floor(logoHeight / 2) } : { width: logoWidth, height: logoHeight, }).toFile(`assets/recused-logo.png`)
         }
-        if (width && height && density) await sharp(input, { limitInputPixels: 8585550069 }).resize({ width: Math.floor(width / 8), height: Math.floor(height / 8) }).composite([{ input: 'assets/recused-logo.png', gravity: "center", }]).withMetadata({ density: 72 }).toFile(`output/ProductPage-${imgName}`)
+        if (width && height) await sharp(input, { limitInputPixels: 8585550069 }).resize({ width: Math.floor(width / 8), height: Math.floor(height / 8) }).composite([{ input: 'assets/recused-logo.png', gravity: "center", }]).withMetadata({ density: 72 }).toFile(`output/ProductPage-${imgName}`)
 
     } catch (error) {
-        console.log(error);
+        console.log(error)
     }
 }
 export const resizeForThumbnail = async (input: string, imgName: string) => {
@@ -77,6 +79,6 @@ export const resizeForThumbnail = async (input: string, imgName: string) => {
         if (width && height && density) await sharp(input, { limitInputPixels: 8585550069 }).resize({ width: 150 }).withMetadata({ density: 72 }).toFile(`output/Thumbnail-${imgName}`)
 
     } catch (error) {
-        console.log(error);
+        console.log(error)
     }
 }

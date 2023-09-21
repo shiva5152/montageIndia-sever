@@ -77,10 +77,12 @@ const resizeForProductPage = (input, imgName) => __awaiter(void 0, void 0, void 
     try {
         const { density, width, height } = yield (0, sharp_1.default)(input, { limitInputPixels: 8585550069 }).metadata();
         const { width: logoWidth, height: logoHeight } = yield (0, sharp_1.default)('assets/logo.png', { limitInputPixels: 8585550069 }).metadata();
+        console.log(logoHeight, height, width, logoWidth);
+        // return console.log("from composite");
         if (logoHeight && height && width && logoWidth) {
-            yield (0, sharp_1.default)('assets/logo.png', { limitInputPixels: 8585550069 }).resize((logoHeight >= height || logoWidth >= width) ? { width: Math.floor(logoWidth / 2), height: Math.floor(logoHeight / 2) } : { width: logoWidth, height: logoHeight, }).toFile(`assets/recused-logo.png`);
+            yield (0, sharp_1.default)('assets/logo.png', { limitInputPixels: 8585550069 }).resize((logoHeight >= (height / 8) || (logoWidth >= width / 8)) ? { width: Math.floor(logoWidth / 2), height: Math.floor(logoHeight / 2) } : { width: logoWidth, height: logoHeight, }).toFile(`assets/recused-logo.png`);
         }
-        if (width && height && density)
+        if (width && height)
             yield (0, sharp_1.default)(input, { limitInputPixels: 8585550069 }).resize({ width: Math.floor(width / 8), height: Math.floor(height / 8) }).composite([{ input: 'assets/recused-logo.png', gravity: "center", }]).withMetadata({ density: 72 }).toFile(`output/ProductPage-${imgName}`);
     }
     catch (error) {
